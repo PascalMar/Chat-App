@@ -1,11 +1,22 @@
-import { StyleSheet, View, Text, Button, TextInput, ImageBackground, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, Button, TextInput, ImageBackground, TouchableOpacity, KeyboardAvoidingView, Platform, Alert } from 'react-native';
 import { useState } from 'react';
-
+import { getAuth, signInAnonymously } from 'firebase/auth';
 
 const Start = ({ navigation }) => {
     const [name, setName] = useState('');
     const colors = ['#090C08', '#474056', '#8A95A5', '#B9C6AE'];
     const [background, setBackground] = useState('');
+
+    const auth = getAuth();
+
+    const signInUser = () => {
+        signInAnonymously(auth).then(res => {
+            navigation.navigate("Chat", { userID: res.user.uid, name: name, background: background });
+            Alert.alert("Signed in Successfully");
+        }).catch(err => {
+            Alert.alert("Unable to sign in, try later again");
+        })
+    }
 
     return (
         <View style={styles.container}>
@@ -14,7 +25,6 @@ const Start = ({ navigation }) => {
                 resizeMode="cover"
                 style={styles.imageBackground}
             >
-                <Text>Hello!</Text>
                 <TextInput
                     style={styles.textInput}
                     value={name}
@@ -42,11 +52,18 @@ const Start = ({ navigation }) => {
                     accessibilityRole="button"
                     accessibilityHint="Lets you choose to enter the chat room"
                     style={styles.button}
-                    onPress={() => navigation.navigate('Chat', { name: name, background: background })}
+                    onPress={() => {
+                        if (name == '') {
+                            Alert.alert('You need a username');
+                        } else {
+                            signInUser();
+                        }
+                    }}
                 >
                     <Text style={styles.buttonText}>Start Chatting</Text>
                 </TouchableOpacity>
             </ImageBackground >
+            {Platform.OS === "ios" ? <KeyboardAvoidingView behavior="padding" /> : null}
         </View>
 
     );
@@ -87,7 +104,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#757083',
     },
     buttonText: {
-        fontSize: 16,    
+        fontSize: 16,
         fontWeight: '600',
         letterSpacing: 0.25,
         color: '#FFFFFF',
