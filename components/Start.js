@@ -1,4 +1,4 @@
-import { StyleSheet, View, Text, Button, TextInput, ImageBackground, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, Button, TextInput, ImageBackground, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
 import { useState } from 'react';
 
 
@@ -14,7 +14,6 @@ const Start = ({ navigation }) => {
                 resizeMode="cover"
                 style={styles.imageBackground}
             >
-                <Text>Hello!</Text>
                 <TextInput
                     style={styles.textInput}
                     value={name}
@@ -47,6 +46,7 @@ const Start = ({ navigation }) => {
                     <Text style={styles.buttonText}>Start Chatting</Text>
                 </TouchableOpacity>
             </ImageBackground >
+            {Platform.OS === "ios" ? <KeyboardAvoidingView behavior="padding" /> : null}
         </View>
 
     );
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#757083',
     },
     buttonText: {
-        fontSize: 16,    
+        fontSize: 16,
         fontWeight: '600',
         letterSpacing: 0.25,
         color: '#FFFFFF',
