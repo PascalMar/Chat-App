@@ -3,12 +3,17 @@ import Start from './components/Start';
 import Chat from './components/Chat';
 // import FireBase
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
+import { getFirestore, enableNetwork, disableNetwork } from "firebase/firestore";
 // import react Navigation
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import { LogBox } from 'react-native';
+//  real-time network connectivity detection system
+import { useNetInfo } from '@react-native-community/netinfo';
+
+import { useEffect } from 'react';
+
+import { LogBox, Alert } from 'react-native';
 LogBox.ignoreAllLogs();
 
 
@@ -16,6 +21,7 @@ LogBox.ignoreAllLogs();
 const Stack = createNativeStackNavigator();
 
 const App = () => {
+
   const firebaseConfig = {
     apiKey: "AIzaSyA_n0eG66tB1x-UOSQLN1BByvWEKTjIyMw",
     authDomain: "chat-app-b2e1c.firebaseapp.com",
@@ -32,8 +38,16 @@ const App = () => {
   // Initialize Cloud Firestore and get a reference to the service
   const db = getFirestore(app);
 
+  const connectionStatus = useNetInfo();
 
-
+  useEffect(() => {
+    if (connectionStatus.isConnected) {
+      enableNetwork(db);
+    } else {
+      Alert.alert("Connection Lost!");
+      disableNetwork(db);
+    }
+  }, [connectionStatus.isConnected])
 
 
   return (
@@ -47,7 +61,7 @@ const App = () => {
         />
         <Stack.Screen
           name="Chat">
-          {props => <Chat db={db}  {...props} />}
+          {props => <Chat db={db} isConnected={connectionStatus.isConnected} {...props} />}
         </Stack.Screen>
 
       </Stack.Navigator>
