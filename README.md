@@ -65,7 +65,7 @@ for database and storage
 
 1. clone the repository 
 
-`git clone https://github.com/Eliaslichi96/chat-app`
+`git clone https://github.com/PascalMar/chat-app`
 
 2. navigate to the project directory
 3. install dependencies
